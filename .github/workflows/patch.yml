@@ -5,3 +5,66 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+jobs:
+  fetch-patch-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Current Repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          lfs: true
+
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Add Remote and Fetch Main Branch
+        run: |
+          git remote add upstream ${{ vars.UPSTREAM_REPO }}
+          git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+
+      - name: Checkout to Specific Directory from Upstream
+        run: |
+          git checkout upstream/${{ vars.UPSTREAM_BRANCH }} -- ${{ vars.STYLES_DIR }}
+
+      - name: Create Merge Commit
+        run: |
+          git add ${{ vars.STYLES_DIR }}
+          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
+
+      - name: Sync LFS Objects
+        run: |
+          git lfs install
+          git lfs fetch --all upstream
+          git lfs push --all origin ${{ vars.LOCAL_BRANCH }}
+
+      - name: Replace Colour Codes in CSS Files
+        run: |
+          declare -A colours=(
+            ["11111b"]="000000" # crust
+            ["181825"]="0b0b0b" # mantle
+            ["1e1e2e"]="161616" # base
+            ["313244"]="262626" # surface0
+            ["45475a"]="393939" # surface1
+            ["585b70"]="525252" # surface2
+            ["6c7086"]="6f6f6f" # overlay0
+            ["7f849c"]="8d8d8d" # overlay1
+            ["9399b2"]="a8a8a8" # overlay2
+            ["a6adc8"]="c6c6c6" # subtext0
+            ["bac2de"]="e0e0e0" # subtext1
+            ["cdd6f4"]="f4f4f4" # text
+          )
+          CSS_FILES=$(find ${{ vars.STYLES_DIR }} -type f -name "*.css")
+          for file in $CSS_FILES; do
+            for colour in "${!colours[@]}"; do
+              sed -i "s/$colour/${colours[$colour]}/Ig" "$file"
+            done
+          done
+
+      - name: Commit and Push Patches
+        run: |
+          git add ${{ vars.STYLES_DIR }}
+          git commit -m "chore: patched on $(date +'%Y-%m-%d')"
+          git push
