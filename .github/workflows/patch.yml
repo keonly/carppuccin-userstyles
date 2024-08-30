@@ -36,7 +36,7 @@ jobs:
       - name: Sync LFS Objects
         run: |
           git lfs install
-          git lfs fetch --all upstream ${{ vars.UPSTREAM_BRANCH }}
+          git lfs fetch --all upstream
           git lfs push --all origin ${{ vars.LOCAL_BRANCH }}
 
       - name: Replace Colour Codes in CSS Files
