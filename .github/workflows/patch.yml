@@ -19,7 +19,20 @@ jobs:
         run: |
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
           git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
-          git checkout -b upstream-${{ vars.UPSTREAM_BRANCH }} upstream/${{ vars.UPSTREAM_BRANCH }}
+
+      - name: Merge Specific Directory from Upstream
+        run: |
+          git checkout upstream/main -- ${{ vars.STYLES_DIR }}
+
+      - name: Commit Merged Directory
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "GitHub Actions"
+          author_email: "actions@github.com"
+          message: "Merged changes from upstream in ${{ vars.STYLES_DIR }}"
+          add: "${{ vars.STYLES_DIR }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Replace Colour Codes in CSS Files
         run: |
@@ -43,23 +56,6 @@ jobs:
               sed -i "s/$colour/${colours[$colour]}/Ig" "$file"
             done
           done
-
-      - name: Commit Changes Before Switching Branches
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "GitHub Actions"
-          author_email: "actions@github.com"
-          message: "chore: intermediate commit before switching branches"
-          add: "${{ vars.STYLES_DIR }}/**/*"
-          push: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Checkout Main Branch
-        run: git checkout ${{ vars.LOCAL_BRANCH }}
-
-      - name: Merge Changes into Main
-        run: git merge upstream-${{ vars.UPSTREAM_BRANCH }} --allow-unrelated-histories
 
       - name: Commit and Push Changes
         uses: EndBug/add-and-commit@v9
