@@ -31,6 +31,7 @@ jobs:
           author_email: "actions@github.com"
           message: "Merged changes from upstream in ${{ vars.STYLES_DIR }}"
           add: "${{ vars.STYLES_DIR }}"
+          push: false
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
