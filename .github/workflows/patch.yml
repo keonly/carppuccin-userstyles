@@ -24,16 +24,17 @@ jobs:
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
           git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
 
+      - name: Checkout to Specific Directory from Upstream
+        run: |
+          git checkout upstream/main -- ${{ vars.STYLES_DIR }}
+
       - name: Sync LFS Objects
+
         run: |
           git lfs install
           git lfs pull upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs fetch --all upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push --all origin main
-
-      - name: Checkout to Specific Directory from Upstream
-        run: |
-          git checkout upstream/main -- ${{ vars.STYLES_DIR }}
 
       - name: Create Merge Commit
         run: |
