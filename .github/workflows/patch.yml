@@ -26,6 +26,7 @@ jobs:
 
       - name: Sync LFS Objects
         run: |
+          git lfs install
           git lfs pull upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs fetch --all upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push --all origin main
