@@ -51,6 +51,7 @@ jobs:
           author_email: "actions@github.com"
           message: "chore: intermediate commit before switching branches"
           add: "./styles/**/*"
+          push: false
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
@@ -67,5 +68,6 @@ jobs:
           author_email: "actions@github.com"
           message: "chore: patched on $(date +'%Y-%m-%d')"
           add: "${{ vars.STYLES_DIR }}**/*.css"
+          push: true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
