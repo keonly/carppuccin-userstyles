@@ -1,0 +1,58 @@
+name: Fetch, Patch, and Push
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch-patch-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Current Repository
+        uses: actions/checkout@v4
+
+      - name: Add Remote and Fetch Main Branch
+        run: |
+          git remote add upstream ${{ vars.UPSTREAM_REPO }}
+          git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+          git checkout -b upstream-${{ vars.UPSTREAM_BRANCH }} upstream/${{ vars.UPSTREAM_BRANCH }}
+
+      - name: Replace Colour Codes in CSS Files
+        run: |
+          declare -A colours=(
+            ["11111b"]="000000" # crust
+            ["181825"]="0b0b0b" # mantle
+            ["1e1e2e"]="161616" # base
+            ["313244"]="262626" # surface0
+            ["45475a"]="393939" # surface1
+            ["585b70"]="525252" # surface2
+            ["6c7086"]="6f6f6f" # overlay0
+            ["7f849c"]="8d8d8d" # overlay1
+            ["9399b2"]="a8a8a8" # overlay2
+            ["a6adc8"]="c6c6c6" # subtext0
+            ["bac2de"]="e0e0e0" # subtext1
+            ["cdd6f4"]="f4f4f4" # text
+          )
+          CSS_FILES=$(find ${{ vars.STYLES_DIR }} -type f -name "*.css")
+          for file in $CSS_FILES; do
+            for colour in "${!colours[@]}"; do
+              sed -i "s/$colour/${colours[$colour]}/Ig" "$file"
+            done
+          done
+
+      - name: Checkout Main Branch
+        run: git checkout ${{ vars.LOCAL_BRANCH }}
+
+      - name: Merge Changes into Main
+        run: git merge upstream-${{ vars.UPSTREAM_BRANCH }} --allow-unrelated-histories
+
+      - name: Commit and Push Changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "GitHub Actions"
+          author_email: "actions@github.com"
+          message: "chore: patched on $(date +'%Y-%m-%d')"
+          add: "${{ vars.STYLES_DIR }}**/*.css"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
