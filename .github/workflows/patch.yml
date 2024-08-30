@@ -12,6 +12,9 @@ jobs:
       - name: Checkout Current Repository
         uses: actions/checkout@v4
 
+      - name: Disable LFS Smudge
+        run: git lfs install --skip-smudge
+
       - name: Add Remote and Fetch Main Branch
         run: |
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
