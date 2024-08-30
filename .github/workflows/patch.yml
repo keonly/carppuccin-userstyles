@@ -44,6 +44,16 @@ jobs:
             done
           done
 
+      - name: Commit Changes Before Switching Branches
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "GitHub Actions"
+          author_email: "actions@github.com"
+          message: "chore: intermediate commit before switching branches"
+          add: "./styles/**/*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
       - name: Checkout Main Branch
         run: git checkout ${{ vars.LOCAL_BRANCH }}
 
