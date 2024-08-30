@@ -11,9 +11,8 @@ jobs:
     steps:
       - name: Checkout Current Repository
         uses: actions/checkout@v4
-
-      - name: Disable LFS Smudge
-        run: git lfs install --skip-smudge
+        with:
+          lfs: true
 
       - name: Add Remote and Fetch Main Branch
         run: |
@@ -29,7 +28,7 @@ jobs:
         with:
           author_name: "GitHub Actions"
           author_email: "actions@github.com"
-          message: "Merged changes from upstream in ${{ vars.STYLES_DIR }}"
+          message: "Merged changes from upstream on $(date +'%Y-%m-%d')"
           add: "${{ vars.STYLES_DIR }}"
           push: false
         env:
