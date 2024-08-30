@@ -14,6 +14,11 @@ jobs:
         with:
           lfs: true
 
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
       - name: Add Remote and Fetch Main Branch
         run: |
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
@@ -23,20 +28,14 @@ jobs:
         run: |
           git lfs fetch --all upstream ${{ vars.UPSTREAM_BRANCH }}
 
-      - name: Merge Specific Directory from Upstream
+      - name: Checkout to Specific Directory from Upstream
         run: |
           git checkout upstream/main -- ${{ vars.STYLES_DIR }}
 
-      - name: Commit Merged Directory
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "GitHub Actions"
-          author_email: "actions@github.com"
-          message: "Merged changes from upstream on $(date +'%Y-%m-%d')"
-          add: "${{ vars.STYLES_DIR }}"
-          push: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Create Merge Commit
+        run: |
+          git add ${{ vars.STYLES_DIR }}
+          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
 
       - name: Replace Colour Codes in CSS Files
         run: |
@@ -61,13 +60,8 @@ jobs:
             done
           done
 
-      - name: Commit and Push Changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "GitHub Actions"
-          author_email: "actions@github.com"
-          message: "chore: patched on $(date +'%Y-%m-%d')"
-          add: "${{ vars.STYLES_DIR }}/**/*"
-          push: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Commit and Push Patches
+        run: |
+          git add ${{ vars.STYLES_DIR }}
+          git commit -m "chore: patched on $(date +'%Y-%m-%d')"
+          git push
