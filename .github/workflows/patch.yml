@@ -28,18 +28,17 @@ jobs:
         run: |
           git checkout upstream/main -- ${{ vars.STYLES_DIR }}
 
-      - name: Sync LFS Objects
+      - name: Create Merge Commit
+        run: |
+          git add ${{ vars.STYLES_DIR }}
+          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
 
+      - name: Sync LFS Objects
         run: |
           git lfs install
           git lfs pull upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs fetch --all upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push --all origin main
-
-      - name: Create Merge Commit
-        run: |
-          git add ${{ vars.STYLES_DIR }}
-          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
 
       - name: Replace Colour Codes in CSS Files
         run: |
