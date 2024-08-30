@@ -12,6 +12,7 @@ jobs:
       - name: Checkout Current Repository
         uses: actions/checkout@v4
         with:
+          ref: main
           lfs: true
 
       - name: Setup Git Config
