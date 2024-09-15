@@ -2,7 +2,7 @@
 @name Pinterest Catppuccin
 @namespace github.com/catppuccin/userstyles/styles/pinterest
 @homepageURL https://github.com/catppuccin/userstyles/tree/main/styles/pinterest
-@version 1.1.6
+@version 1.1.7
 @updateURL https://github.com/catppuccin/userstyles/raw/main/styles/pinterest/catppuccin.user.css
 @supportURL https://github.com/catppuccin/userstyles/issues?q=is%3Aopen+is%3Aissue+label%3Apinterest
 @description Soothing pastel theme for Pinterest
@@ -17,11 +17,15 @@
 
 @-moz-document regexp("^https?:\\/\\/(www|[a-z]{2}).pinterest.(com(.(au|mx))?|co(.(uk|kr))?|at|ca|ch|cl|de|dk|es|fr|ie|it|jp|nz|ph|pt|ru|se)\\/.*") {
   @media (prefers-color-scheme: light) {
-    #catppuccin(@lightFlavor, @accentColor);
+    :root {
+      #catppuccin(@lightFlavor, @accentColor);
+    }
   }
 
   @media (prefers-color-scheme: dark) {
-    #catppuccin(@darkFlavor, @accentColor);
+    :root {
+      #catppuccin(@darkFlavor, @accentColor);
+    }
   }
 
   #catppuccin(@lookup, @accent) {
@@ -67,94 +71,92 @@
       }
     }
 
-    :root {
-      --color-text-light: if((@lookup = latte), @mantle, @text);
-      --color-text-dark: if((@lookup = latte), @text, @mantle);
-      --color-text-default: @text;
-      --color-text-inverse: @mantle;
-      --color-text-subtle: @subtext0;
-      --color-text-error: @accent-color;
-      --color-text-shopping: @accent-color;
-      --color-text-link: @accent-color;
+    --color-text-light: if((@lookup = latte), @mantle, @text);
+    --color-text-dark: if((@lookup = latte), @text, @mantle);
+    --color-text-default: @text;
+    --color-text-inverse: @mantle;
+    --color-text-subtle: @subtext0;
+    --color-text-error: @accent-color;
+    --color-text-shopping: @accent-color;
+    --color-text-link: @accent-color;
 
-      --color-text-icon-light: if((@lookup = latte), @mantle, @subtext1);
-      --color-text-icon-dark: if((@lookup = latte), @subtext1, @mantle);
-      --color-text-icon-default: @subtext0;
-      --color-icon-subtle: @subtext1;
-      --color-text-icon-inverse: @mantle;
-      --color-text-icon-subtle: @subtext0;
-      --color-text-icon-error: @accent-color;
-      --color-text-icon-brand-primary: @accent-color;
+    --color-text-icon-light: if((@lookup = latte), @mantle, @subtext1);
+    --color-text-icon-dark: if((@lookup = latte), @subtext1, @mantle);
+    --color-text-icon-default: @subtext0;
+    --color-icon-subtle: @subtext1;
+    --color-text-icon-inverse: @mantle;
+    --color-text-icon-subtle: @subtext0;
+    --color-text-icon-error: @accent-color;
+    --color-text-icon-brand-primary: @accent-color;
 
-      --color-background-light: if((@lookup = latte), @mantle, @subtext1);
-      --color-background-dark: if((@lookup = latte), @text, @mantle);
-      --color-background-default: @base;
-      --color-background-inverse-base: @subtext1;
-      --color-background-primary-base: @accent-color;
-      --color-background-secondary-base: @mantle;
-      --color-background-secondary-active: @mantle;
-      --color-background-selected-base: @subtext1;
-      --color-background-box-default: @mantle;
-      --color-background-box-selected: @accent-color;
-      --color-background-box-primary: @accent-color;
-      --color-background-box-secondary: @surface1;
-      --color-background-overlay: @surface0;
-      --color-background-popover-primary: @mantle;
-      --color-background-popover-secondary: @overlay2;
-      --color-background-tag-primary-hover: @surface2;
-      --color-background-box-light: @mantle;
-      --color-background-button-secondary-default: @surface0;
-      --color-background-button-secondary-hover: @surface1;
-      --color-background-button-secondary-active: @surface2;
-      --color-background-tag-primary-default: @surface1;
-      --color-background-button-disabled-default: darken(@mantle, 2%);
-      --color-background-formfield-primary: @surface0;
-      --color-border-container: @surface1;
-      --color-border-default: @mantle;
-      --color-border-popover-primary: @surface0;
-      --color-border-popover-secondary: @text;
-      --color-text-success: @green;
-      --color-text-warning: @yellow;
-      --color-icon-success: @green;
-      --color-icon-warning: @yellow;
-      --color-icon-error: @red;
-      --color-icon-info: @blue;
-      --color-icon-recommendation: @mauve;
-      --color-icon-brand-primary: @accent-color;
-      --color-icon-inverse: @crust;
-      --color-background-brand: @accent-color;
-      --color-background-box-brand: @accent-color;
-      --color-background-button-primary-default: @accent-color;
-      --color-background-badge-warning: @yellow;
-      --color-background-badge-success: @green;
-      --color-background-education: @blue;
-      --color-background-primary-strong: @accent-color;
-      --color-background-shopping: @blue;
+    --color-background-light: if((@lookup = latte), @mantle, @subtext1);
+    --color-background-dark: if((@lookup = latte), @text, @mantle);
+    --color-background-default: @base;
+    --color-background-inverse-base: @subtext1;
+    --color-background-primary-base: @accent-color;
+    --color-background-secondary-base: @mantle;
+    --color-background-secondary-active: @mantle;
+    --color-background-selected-base: @subtext1;
+    --color-background-box-default: @mantle;
+    --color-background-box-selected: @accent-color;
+    --color-background-box-primary: @accent-color;
+    --color-background-box-secondary: @surface1;
+    --color-background-overlay: @surface0;
+    --color-background-popover-primary: @mantle;
+    --color-background-popover-secondary: @overlay2;
+    --color-background-tag-primary-hover: @surface2;
+    --color-background-box-light: @mantle;
+    --color-background-button-secondary-default: @surface0;
+    --color-background-button-secondary-hover: @surface1;
+    --color-background-button-secondary-active: @surface2;
+    --color-background-tag-primary-default: @surface1;
+    --color-background-button-disabled-default: darken(@mantle, 2%);
+    --color-background-formfield-primary: @surface0;
+    --color-border-container: @surface1;
+    --color-border-default: @mantle;
+    --color-border-popover-primary: @surface0;
+    --color-border-popover-secondary: @text;
+    --color-text-success: @green;
+    --color-text-warning: @yellow;
+    --color-icon-success: @green;
+    --color-icon-warning: @yellow;
+    --color-icon-error: @red;
+    --color-icon-info: @blue;
+    --color-icon-recommendation: @mauve;
+    --color-icon-brand-primary: @accent-color;
+    --color-icon-inverse: @crust;
+    --color-background-brand: @accent-color;
+    --color-background-box-brand: @accent-color;
+    --color-background-button-primary-default: @accent-color;
+    --color-background-badge-warning: @yellow;
+    --color-background-badge-success: @green;
+    --color-background-education: @blue;
+    --color-background-primary-strong: @accent-color;
+    --color-background-shopping: @blue;
 
-      --g-colorTransparentWhite: fadeout(@base, 30%);
-      --g-colorTransparentDarkGray: fadeout(@mantle, 20%);
-      --g-colorGray0: @mantle;
-      --g-colorGray0Hovered: darken(@mantle, 2.5%);
-      --g-colorGray0Active: darken(@mantle, 5%);
-      --g-colorGray50: @mantle;
-      --g-colorGray100: @mantle;
-      --g-colorGray100Hovered: darken(@surface0, 2.5%);
-      --g-colorGray100Active: darken(@surface0, 5%);
-      --g-colorGray200: @subtext0;
-      --g-colorGray300: @subtext1;
-      --g-colorRed100: @accent-color;
-      --g-colorRed100Hovered: darken(@accent-color, 7.5%);
-      --g-colorRed100Active: darken(@accent-color, 10%);
-      --g-color-focus: fadeout(@accent-color, 50%);
-      --color-gray-roboflow-400: @crust;
-      --color-gray-roboflow-200: @mantle;
+    --g-colorTransparentWhite: fadeout(@base, 30%);
+    --g-colorTransparentDarkGray: fadeout(@mantle, 20%);
+    --g-colorGray0: @mantle;
+    --g-colorGray0Hovered: darken(@mantle, 2.5%);
+    --g-colorGray0Active: darken(@mantle, 5%);
+    --g-colorGray50: @mantle;
+    --g-colorGray100: @mantle;
+    --g-colorGray100Hovered: darken(@surface0, 2.5%);
+    --g-colorGray100Active: darken(@surface0, 5%);
+    --g-colorGray200: @subtext0;
+    --g-colorGray300: @subtext1;
+    --g-colorRed100: @accent-color;
+    --g-colorRed100Hovered: darken(@accent-color, 7.5%);
+    --g-colorRed100Active: darken(@accent-color, 10%);
+    --g-color-focus: fadeout(@accent-color, 50%);
+    --color-gray-roboflow-400: @crust;
+    --color-gray-roboflow-200: @mantle;
 
-      --g-blue: @accent-color;
-      --color-background-info-base: @blue;
-      --color-background-error-base: @red;
-      --color-background-warning-base: @peach;
-      --color-background-success-base: @green;
-    }
+    --g-blue: @accent-color;
+    --color-background-info-base: @blue;
+    --color-background-error-base: @red;
+    --color-background-warning-base: @peach;
+    --color-background-success-base: @green;
 
     body {
       background-color: @base;
@@ -162,7 +164,7 @@
     }
 
     /* the void (parts not loaded yet) */
-    html {
+    & {
       background: @base !important;
     }
 
@@ -779,7 +781,7 @@
   @latte:     { @rosewater: #dc8a78; @flamingo: #dd7878; @pink: #ea76cb; @mauve: #8839ef; @red: #d20f39; @maroon: #e64553; @peach: #fe640b; @yellow: #df8e1d; @green: #40a02b; @teal: #179299; @sky: #04a5e5; @sapphire: #209fb5; @blue: #1e66f5; @lavender: #7287fd; @text: #4c4f69; @subtext1: #5c5f77; @subtext0: #6c6f85; @overlay2: #7c7f93; @overlay1: #8c8fa1; @overlay0: #9ca0b0; @surface2: #acb0be; @surface1: #bcc0cc; @surface0: #ccd0da; @base: #eff1f5; @mantle: #e6e9ef; @crust: #dce0e8; };
   @frappe:    { @rosewater: #f2d5cf; @flamingo: #eebebe; @pink: #f4b8e4; @mauve: #ca9ee6; @red: #e78284; @maroon: #ea999c; @peach: #ef9f76; @yellow: #e5c890; @green: #a6d189; @teal: #81c8be; @sky: #99d1db; @sapphire: #85c1dc; @blue: #8caaee; @lavender: #babbf1; @text: #c6d0f5; @subtext1: #b5bfe2; @subtext0: #a5adce; @overlay2: #949cbb; @overlay1: #838ba7; @overlay0: #737994; @surface2: #626880; @surface1: #51576d; @surface0: #414559; @base: #303446; @mantle: #292c3c; @crust: #232634; };
   @macchiato: { @rosewater: #f4dbd6; @flamingo: #f0c6c6; @pink: #f5bde6; @mauve: #c6a0f6; @red: #ed8796; @maroon: #ee99a0; @peach: #f5a97f; @yellow: #eed49f; @green: #a6da95; @teal: #8bd5ca; @sky: #91d7e3; @sapphire: #7dc4e4; @blue: #8aadf4; @lavender: #b7bdf8; @text: #cad3f5; @subtext1: #b8c0e0; @subtext0: #a5adcb; @overlay2: #939ab7; @overlay1: #8087a2; @overlay0: #6e738d; @surface2: #5b6078; @surface1: #494d64; @surface0: #363a4f; @base: #24273a; @mantle: #1e2030; @crust: #181926; };
-  @mocha:     { @rosewater: #f5e0dc; @flamingo: #f2cdcd; @pink: #f5c2e7; @mauve: #cba6f7; @red: #f38ba8; @maroon: #eba0ac; @peach: #fab387; @yellow: #f9e2af; @green: #a6e3a1; @teal: #94e2d5; @sky: #89dceb; @sapphire: #74c7ec; @blue: #89b4fa; @lavender: #b4befe; @text: #f4f4f4; @subtext1: #e0e0e0; @subtext0: #c6c6c6; @overlay2: #a8a8a8; @overlay1: #8d8d8d; @overlay0: #6f6f6f; @surface2: #525252; @surface1: #393939; @surface0: #262626; @base: #161616; @mantle: #0b0b0b; @crust: #000000; };
+  @mocha:     { @rosewater: #f5e0dc; @flamingo: #f2cdcd; @pink: #f5c2e7; @mauve: #cba6f7; @red: #f38ba8; @maroon: #eba0ac; @peach: #fab387; @yellow: #f9e2af; @green: #a6e3a1; @teal: #94e2d5; @sky: #89dceb; @sapphire: #74c7ec; @blue: #89b4fa; @lavender: #b4befe; @text: #cdd6f4; @subtext1: #bac2de; @subtext0: #a6adc8; @overlay2: #9399b2; @overlay1: #7f849c; @overlay0: #6c7086; @surface2: #585b70; @surface1: #45475a; @surface0: #313244; @base: #1e1e2e; @mantle: #181825; @crust: #11111b; };
 }
 
 // vim:ft=less
