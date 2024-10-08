@@ -68,16 +68,17 @@ jobs:
       - name: Check for LFS Object Differences
         id: check-lfs-changes
         run: |
+          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
           LOCAL_LFS=$(git lfs ls-files | awk '{print $3}')
           UPSTREAM_LFS=$(git lfs ls-files --ref upstream/${{ vars.UPSTREAM_BRANCH }} | awk '{print $3}')
           if [[ "$LOCAL_LFS" != "$UPSTREAM_LFS" ]]; then
-            echo "::set-output name=lfs-changed::true"
+            echo "lfs-changed=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=lfs-changed::false"
+            echo "lfs-changed=false" >> $GITHUB_ENV
           fi
 
       - name: Sync LFS Objects (if changes exist)
-        if: ${{ steps.check-lfs-changes.outputs.lfs-changed == 'true' }}
+        if: ${{ env.lfs-changed == 'true' }}
         run: |
           git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push origin ${{ vars.LOCAL_BRANCH }}
