@@ -2,7 +2,7 @@ name: Fetch, Patch, and Push
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -65,20 +65,22 @@ jobs:
           git commit -m "chore: patched on $(date +'%Y-%m-%d')"
           git push origin ${{ vars.LOCAL_BRANCH }}
 
+      - name: Fetch LFS Objects from Upstream
+        run: |
+          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+
       - name: Check for LFS Object Differences
         id: check-lfs-changes
         run: |
-          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
-          LOCAL_LFS=$(git lfs ls-files | awk '{print $3}')
-          UPSTREAM_LFS=$(git lfs ls-files --ref upstream/${{ vars.UPSTREAM_BRANCH }} | awk '{print $3}')
-          if [[ "$LOCAL_LFS" != "$UPSTREAM_LFS" ]]; then
-            echo "lfs-changed=true" >> $GITHUB_ENV
+          git lfs ls-files > local_lfs.txt
+          git lfs ls-files upstream/${{ vars.UPSTREAM_BRANCH }} > upstream_lfs.txt
+          if diff -q local_lfs.txt upstream_lfs.txt > /dev/null; then
+            echo "lfs_changed=false" >> $GITHUB_ENV
           else
-            echo "lfs-changed=false" >> $GITHUB_ENV
+            echo "lfs_changed=true" >> $GITHUB_ENV
           fi
 
       - name: Sync LFS Objects (if changes exist)
-        if: ${{ env.lfs-changed == 'true' }}
+        if: ${{ env.lfs_changed == 'true' }}
         run: |
-          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push origin ${{ vars.LOCAL_BRANCH }}
