@@ -66,12 +66,18 @@ jobs:
           git push origin ${{ vars.LOCAL_BRANCH }}
 
       - name: Check for LFS Object Differences
+        id: check-lfs-changes
         run: |
-          git lfs fetch --dry-run upstream ${{ vars.UPSTREAM_BRANCH }}
-          git lfs status --json > lfs_status.json
+          LOCAL_LFS=$(git lfs ls-files | awk '{print $3}')
+          UPSTREAM_LFS=$(git lfs ls-files --ref upstream/${{ vars.UPSTREAM_BRANCH }} | awk '{print $3}')
+          if [[ "$LOCAL_LFS" != "$UPSTREAM_LFS" ]]; then
+            echo "::set-output name=lfs-changed::true"
+          else
+            echo "::set-output name=lfs-changed::false"
+          fi
 
-      - name: Sync LFS Objects Only if Necessary
-        if: ${{ steps.lfs-status.outputs.lfs-changed == 'true' }}
+      - name: Sync LFS Objects (if changes exist)
+        if: ${{ steps.check-lfs-changes.outputs.lfs-changed == 'true' }}
         run: |
           git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
           git lfs push origin ${{ vars.LOCAL_BRANCH }}
