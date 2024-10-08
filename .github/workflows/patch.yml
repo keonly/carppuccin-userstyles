@@ -2,7 +2,7 @@ name: Fetch, Patch, and Push
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -23,26 +23,16 @@ jobs:
       - name: Add Remote and Fetch Main Branch
         run: |
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
-          git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+          git fetch upstream
 
-      - name: Checkout to Specific Directory from Upstream
+      - name: Checkout and Reset the Target Directory
         run: |
           git checkout upstream/${{ vars.UPSTREAM_BRANCH }} -- ${{ vars.STYLES_DIR }}
-
-      - name: Create Merge Commit
-        run: |
-          git add ${{ vars.STYLES_DIR }}
-          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
-
-      - name: Sync LFS Objects
-        run: |
-          git lfs install
-          git lfs fetch --all upstream
-          git lfs push --all origin ${{ vars.LOCAL_BRANCH }}
+          git reset HEAD ${{ vars.STYLES_DIR }}
 
       - name: Replace Colour Codes in CSS Files
         run: |
-          declare -A colours=(
+          declare -A colour_map=(
             ["11111b"]="000000" # crust
             ["181825"]="0b0b0b" # mantle
             ["1e1e2e"]="161616" # base
@@ -58,13 +48,39 @@ jobs:
           )
           CSS_FILES=$(find ${{ vars.STYLES_DIR }} -type f -name "*.css")
           for file in $CSS_FILES; do
-            for colour in "${!colours[@]}"; do
-              sed -i "s/$colour/${colours[$colour]}/Ig" "$file"
+            for colour in "${!colour_map[@]}"; do
+              sed -i "s/$colour/${colour_map[$colour]}/Ig" "$file"
             done
           done
 
-      - name: Commit and Push Patches
+      - name: Check for file changes in styles directory
+        id: check_changes
+        run: |
+          git diff --quiet ${{ vars.STYLES_DIR }} || echo "Changes detected"
+
+      - name: Commit and Push Patches (if changes exist)
+        if: ${{ steps.check_changes.outcome != 'success' }}
         run: |
           git add ${{ vars.STYLES_DIR }}
           git commit -m "chore: patched on $(date +'%Y-%m-%d')"
-          git push
+          git push origin ${{ vars.LOCAL_BRANCH }}
+
+      - name: Fetch LFS Objects from Upstream
+        run: |
+          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+
+      - name: Check for LFS Object Differences
+        id: check-lfs-changes
+        run: |
+          git lfs ls-files > local_lfs.txt
+          git lfs ls-files upstream/${{ vars.UPSTREAM_BRANCH }} > upstream_lfs.txt
+          if diff -q local_lfs.txt upstream_lfs.txt > /dev/null; then
+            echo "lfs_changed=false" >> $GITHUB_ENV
+          else
+            echo "lfs_changed=true" >> $GITHUB_ENV
+          fi
+
+      - name: Sync LFS Objects (if changes exist)
+        if: ${{ env.lfs_changed == 'true' }}
+        run: |
+          git lfs push origin ${{ vars.LOCAL_BRANCH }}
