@@ -23,26 +23,16 @@ jobs:
       - name: Add Remote and Fetch Main Branch
         run: |
           git remote add upstream ${{ vars.UPSTREAM_REPO }}
-          git fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+          git fetch upstream
 
-      - name: Checkout to Specific Directory from Upstream
+      - name: Checkout and Reset the Target Directory
         run: |
           git checkout upstream/${{ vars.UPSTREAM_BRANCH }} -- ${{ vars.STYLES_DIR }}
-
-      - name: Create Merge Commit
-        run: |
-          git add ${{ vars.STYLES_DIR }}
-          git commit -m "Merged changes from upstream on $(date +'%Y-%m-%d')"
-
-      - name: Sync LFS Objects
-        run: |
-          git lfs install
-          git lfs fetch --all upstream
-          git lfs push --all origin ${{ vars.LOCAL_BRANCH }}
+          git reset HEAD ${{ vars.STYLES_DIR }}
 
       - name: Replace Colour Codes in CSS Files
         run: |
-          declare -A colours=(
+          declare -A colour_map=(
             ["11111b"]="000000" # crust
             ["181825"]="0b0b0b" # mantle
             ["1e1e2e"]="161616" # base
@@ -58,13 +48,30 @@ jobs:
           )
           CSS_FILES=$(find ${{ vars.STYLES_DIR }} -type f -name "*.css")
           for file in $CSS_FILES; do
-            for colour in "${!colours[@]}"; do
-              sed -i "s/$colour/${colours[$colour]}/Ig" "$file"
+            for colour in "${!colour_map[@]}"; do
+              sed -i "s/$colour/${colour_map[$colour]}/Ig" "$file"
             done
           done
 
-      - name: Commit and Push Patches
+      - name: Check for file changes in styles directory
+        id: check_changes
+        run: |
+          git diff --quiet ${{ vars.STYLES_DIR }} || echo "Changes detected"
+
+      - name: Commit and Push Patches (if changes exist)
+        if: ${{ steps.check_changes.outcome != 'success' }}
         run: |
           git add ${{ vars.STYLES_DIR }}
           git commit -m "chore: patched on $(date +'%Y-%m-%d')"
-          git push
+          git push origin ${{ vars.LOCAL_BRANCH }}
+
+      - name: Check for LFS Object Differences
+        run: |
+          git lfs fetch --dry-run upstream ${{ vars.UPSTREAM_BRANCH }}
+          git lfs status --json > lfs_status.json
+
+      - name: Sync LFS Objects Only if Necessary
+        if: ${{ steps.lfs-status.outputs.lfs-changed == 'true' }}
+        run: |
+          git lfs fetch upstream ${{ vars.UPSTREAM_BRANCH }}
+          git lfs push origin ${{ vars.LOCAL_BRANCH }}
